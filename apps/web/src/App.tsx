@@ -1196,7 +1196,7 @@ function App() {
         </section>
 
         <section className="grid">
-          <div className="card" id="documents">
+          <div className="card">
             <div className="card__header">
               <h2>Wygasa wkrotce</h2>
               <button className="btn btn--ghost" disabled>
@@ -1617,7 +1617,7 @@ function App() {
         </section>
 
         <section className="grid">
-          <div className="card">
+          <div className="card" id="documents">
             <div className="card__header">
               <h2>Dokumenty sprzedazowe</h2>
               <span className="table__count">{activeDocuments.length} plikow</span>
