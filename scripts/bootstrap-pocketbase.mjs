@@ -7,7 +7,7 @@ if (!email || !password) {
   process.exit(1)
 }
 
-const openRules = null
+const openRules = '@request.auth.id != "" || @request.auth.id = ""'
 
 const textField = (name, required = false, unique = false) => ({
   name,
@@ -77,7 +77,7 @@ const fileField = (name, maxSelect = 1) => ({
 })
 
 const adminAuth = async () => {
-  const response = await fetch(`${baseUrl}/api/admins/auth-with-password`, {
+  const response = await fetch(`${baseUrl}/api/collections/_superusers/auth-with-password`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ identity: email, password }),
@@ -115,6 +115,17 @@ const run = async () => {
   const ensureCollection = async (name, payload) => {
     const existing = byName.get(name)
     if (existing) {
+      await fetchJson(`${baseUrl}/api/collections/${existing.id}`, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({
+          listRule: openRules,
+          viewRule: openRules,
+          createRule: openRules,
+          updateRule: openRules,
+          deleteRule: openRules,
+        }),
+      })
       return existing
     }
 

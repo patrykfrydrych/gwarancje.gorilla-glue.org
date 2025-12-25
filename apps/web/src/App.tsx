@@ -394,9 +394,9 @@ function App() {
       ] = await Promise.all([
         pb.collection('departments').getFullList({ sort: 'name' }),
         pb.collection('tags').getFullList({ sort: 'label' }),
-        pb.collection('items').getFullList({ sort: '-created', expand: 'department,tags' }),
-        pb.collection('documents').getFullList({ sort: '-created' }),
-        pb.collection('manuals').getFullList({ sort: '-created' }),
+        pb.collection('items').getFullList({ expand: 'department,tags' }),
+        pb.collection('documents').getFullList(),
+        pb.collection('manuals').getFullList(),
         pb.collection('reminders').getFullList({ sort: 'remindAt', expand: 'item' }),
       ])
 
