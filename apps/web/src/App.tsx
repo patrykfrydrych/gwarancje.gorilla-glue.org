@@ -133,8 +133,6 @@ const emptyItem = (departmentId: string, id?: string): Item => ({
   createdAt: new Date().toISOString(),
 })
 
-const toDateInput = (value: string) => (value ? value.slice(0, 10) : '')
-
 const normalizeDate = (value?: string) => {
   if (!value) {
     return ''
@@ -300,11 +298,9 @@ function App() {
   })
 
   const departmentMap = useMemo(
-    () => new Map(departments.map((dept) => [dept.id, dept])),
+    () => new Map(departments.map((dept) => [dept.id, dept] as const)),
     [departments],
   )
-
-  const itemsById = useMemo(() => new Map(items.map((item) => [item.id, item])), [items])
 
   const stats = useMemo(() => {
     const activeCount = items.filter((item) => item.status === 'active').length
@@ -339,8 +335,8 @@ function App() {
           daysLeft,
         }
       })
-      .filter(Boolean)
-      .sort((a, b) => (a!.daysLeft ?? 0) - (b!.daysLeft ?? 0))
+      .filter((item): item is Item & { daysLeft: number } => item !== null)
+      .sort((a, b) => a.daysLeft - b.daysLeft)
       .slice(0, 3)
   }, [items])
 
@@ -468,7 +464,7 @@ function App() {
       return []
     }
 
-    const existingMap = new Map(tags.map((tag) => [tag.label.toLowerCase(), tag]))
+    const existingMap = new Map(tags.map((tag) => [tag.label.toLowerCase(), tag] as const))
     const missing = normalized.filter((label) => !existingMap.has(label.toLowerCase()))
 
     if (missing.length) {
@@ -490,7 +486,9 @@ function App() {
   }
 
   const ensureDepartments = async (entries: Array<{ name: string; color?: string; icon?: string }>) => {
-    const existingMap = new Map(departments.map((dept) => [dept.name.toLowerCase(), dept]))
+    const existingMap = new Map(
+      departments.map((dept) => [dept.name.toLowerCase(), dept] as const),
+    )
     const missing = entries.filter((dept) => !existingMap.has(dept.name.toLowerCase()))
 
     if (missing.length) {
@@ -734,7 +732,7 @@ function App() {
     setExporting(true)
     setError(null)
     try {
-      const itemMap = new Map(items.map((item) => [item.id, item]))
+      const itemMap = new Map(items.map((item) => [item.id, item] as const))
       const payload = {
         exportedAt: new Date().toISOString(),
         baseUrl,
@@ -891,7 +889,7 @@ function App() {
       const raw = await importFile.text()
       const payload = JSON.parse(raw) as ImportPayload
 
-      const filesByName = new Map(importAttachments.map((file) => [file.name, file]))
+      const filesByName = new Map(importAttachments.map((file) => [file.name, file] as const))
 
       const deptEntries = payload.departments ?? []
       const deptMap = await ensureDepartments(deptEntries)
@@ -907,7 +905,7 @@ function App() {
               .map((id) => tags.find((tag) => tag.id === id))
               .filter(Boolean) as Tag[],
           )
-          .map((tag) => [tag.label.toLowerCase(), tag.id]),
+          .map((tag) => [tag.label.toLowerCase(), tag.id] as const),
       )
 
       const createdItemMap = new Map<string, string>()
