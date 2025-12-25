@@ -148,6 +148,25 @@ const normalizeDate = (value?: string) => {
 
 const toIsoDate = (value: string) => (value ? `${value} 00:00:00.000Z` : '')
 
+const formatPocketBaseError = (error: unknown) => {
+  if (!error || typeof error !== 'object') {
+    return null
+  }
+  const err = error as {
+    data?: { message?: string; data?: Record<string, { message?: string }> }
+    message?: string
+  }
+  const fieldErrors = err.data?.data
+    ? Object.entries(err.data.data)
+        .map(([field, details]) => `${field}: ${details?.message ?? 'blad walidacji'}`)
+        .filter(Boolean)
+    : []
+  if (fieldErrors.length) {
+    return `Blad zapisu: ${fieldErrors.join(', ')}`
+  }
+  return err.data?.message ?? err.message ?? null
+}
+
 const daysUntil = (value: string) => {
   if (!value) {
     return null
@@ -574,7 +593,10 @@ function App() {
       setDraft(mapped)
       setThumbnailFile(null)
     } catch (err) {
-      setError('Nie udalo sie zapisac zmian. Sprawdz polaczenie z PocketBase.')
+      setError(
+        formatPocketBaseError(err) ??
+          'Nie udalo sie zapisac zmian. Sprawdz polaczenie z PocketBase.',
+      )
     } finally {
       setSaving(false)
     }
