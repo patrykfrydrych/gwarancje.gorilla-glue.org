@@ -320,6 +320,7 @@ function App() {
     () => new Map(departments.map((dept) => [dept.id, dept] as const)),
     [departments],
   )
+  const isDraftNew = draft?.id.startsWith('new-') ?? false
 
   const stats = useMemo(() => {
     const activeCount = items.filter((item) => item.status === 'active').length
@@ -464,6 +465,9 @@ function App() {
   }, [])
 
   useEffect(() => {
+    if (isDraftNew) {
+      return
+    }
     if (activeItem) {
       setDraft(activeItem)
       setThumbnailFile(null)
@@ -475,7 +479,7 @@ function App() {
     } else {
       setDraft(null)
     }
-  }, [activeItem, items])
+  }, [activeItem, isDraftNew, items])
 
   const ensureTags = async (labels: string[]) => {
     const normalized = labels.map((label) => label.trim()).filter(Boolean)
@@ -539,8 +543,12 @@ function App() {
       return
     }
     const newItem = emptyItem(departments[0].id)
+    setError(null)
     setDraft(newItem)
     setActiveId(newItem.id)
+    setThumbnailFile(null)
+    setDocDraft((prev) => ({ ...prev, title: '', vendor: '', issueDate: '', files: [] }))
+    setManualDraft((prev) => ({ ...prev, title: '', language: '', files: [] }))
   }
 
   const handleSave = async () => {
@@ -683,7 +691,7 @@ function App() {
       setDocuments((prev) => [mapDocument(record), ...prev])
       setDocDraft({ title: '', type: 'invoice', vendor: '', issueDate: '', files: [] })
     } catch (err) {
-      setError('Nie udalo sie dodac dokumentu.')
+      setError(formatPocketBaseError(err) ?? 'Nie udalo sie dodac dokumentu.')
     } finally {
       setSaving(false)
     }
@@ -712,7 +720,7 @@ function App() {
       setManuals((prev) => [mapManual(record), ...prev])
       setManualDraft({ title: '', language: '', files: [] })
     } catch (err) {
-      setError('Nie udalo sie dodac instrukcji.')
+      setError(formatPocketBaseError(err) ?? 'Nie udalo sie dodac instrukcji.')
     } finally {
       setSaving(false)
     }
@@ -1094,7 +1102,15 @@ function App() {
           <button className="btn btn--ghost" onClick={handleNew} disabled={actionsDisabled}>
             Nowy sprzet
           </button>
-          <button className="btn btn--primary" disabled>
+          <button
+            className="btn btn--primary"
+            onClick={() =>
+              document
+                .getElementById('documents')
+                ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+            disabled={actionsDisabled || !activeItem}
+          >
             Dodaj dokument
           </button>
         </div>
@@ -1180,7 +1196,7 @@ function App() {
         </section>
 
         <section className="grid">
-          <div className="card">
+          <div className="card" id="documents">
             <div className="card__header">
               <h2>Wygasa wkrotce</h2>
               <button className="btn btn--ghost" disabled>
