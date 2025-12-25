@@ -1,0 +1,19 @@
+# PocketBase runtime data
+pb/pb_data/
+pb/backups/
+
+# Frontend artifacts
+apps/web/node_modules/
+apps/web/dist/
+apps/web/.vite/
+apps/web/playwright-report/
+apps/web/test-results/
+
+# Local env
+.env
+.env.local
+apps/web/.env
+apps/web/.env.local
+
+# OS junk
+.DS_Store

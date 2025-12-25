@@ -1,0 +1,22 @@
+[
+  {
+    "id": "dept00000000001",
+    "name": "IT",
+    "color": "#0B6E4F"
+  },
+  {
+    "id": "dept00000000002",
+    "name": "Foto",
+    "color": "#E4572E"
+  },
+  {
+    "id": "dept00000000003",
+    "name": "Audio",
+    "color": "#1B2F63"
+  },
+  {
+    "id": "dept00000000004",
+    "name": "Dom",
+    "color": "#6C4AB6"
+  }
+]

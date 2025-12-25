@@ -1,0 +1,22 @@
+[
+  {
+    "id": "tag000000000001",
+    "label": "biuro",
+    "color": "#0B6E4F"
+  },
+  {
+    "id": "tag000000000002",
+    "label": "mobilne",
+    "color": "#E4572E"
+  },
+  {
+    "id": "tag000000000003",
+    "label": "foto",
+    "color": "#1B2F63"
+  },
+  {
+    "id": "tag000000000004",
+    "label": "backup",
+    "color": "#6C4AB6"
+  }
+]

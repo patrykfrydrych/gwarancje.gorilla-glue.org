@@ -1,0 +1,34 @@
+name: Deploy RPi5
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    env:
+      VITE_PB_URL: ${{ vars.VITE_PB_URL || 'https://api.gorilla-glue.org' }}
+      PB_RUNTIME_DIR: /mnt/sql/api/pocketbase
+      PB_PUBLIC_DIR: /mnt/sql/api/pocketbase/pb_public
+      PB_HOOKS_DIR: /mnt/sql/api/pocketbase/pb_hooks
+      PB_MIGRATIONS_DIR: /mnt/sql/api/pocketbase/pb_migrations
+      PB_SERVICE: pocketbase
+      PB_SERVICE_SCOPE: system
+      RUN_INSTALL: '1'
+      RUN_BUILD: '1'
+      RESTART_SERVICE: '1'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Build and deploy
+        run: bash scripts/deploy-rpi.sh
