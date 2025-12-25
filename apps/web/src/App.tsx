@@ -111,8 +111,15 @@ type ImportPayload = {
   }>
 }
 
+const createDraftId = () => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`
+}
+
 const emptyItem = (departmentId: string, id?: string): Item => ({
-  id: id ?? `new-${crypto.randomUUID()}`,
+  id: id ?? `new-${createDraftId()}`,
   name: '',
   brand: '',
   model: '',
